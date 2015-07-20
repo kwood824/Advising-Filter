@@ -1,0 +1,56 @@
+# A default .procmailrc file
+# See http://engr.oregonstate.edu/computing/email/90
+
+# Turn on for more verbose log file
+VERBOSE=yes
+
+# This is where mail is stored
+MAILDIR=$HOME/mail
+
+# All procmail related files go here
+PMDIR=$HOME/advising_filter/procmail
+
+# Create a log file in the procmail directory
+LOGFILE=$PMDIR/log
+
+# Include the standard spam filter
+INCLUDERC=/usr/local/etc/procmail/standard.rc
+
+####################################################
+# (Optionally) Add your own rules after this line
+####################################################
+
+
+####################################################
+# FILTER 1
+# This filter is for catching calendar invites. Invites by default are sent to the email tied to where this filter is placed.
+# ATTENTION: To forward calendar invites to an e-mail of your choosing other than the default tied where this filter was placed follow the next 2 steps. If you want to keep invites coming to the default email tied to where this filter is located then you don't have to change anything on this filter.
+# 1) Put a "#" before "$DEFAULT" on line 3 of this section. So line 3 would read "#$DEFAULT".
+# 2) Remove the "#" in the front of line 4 of this section. Then replace "example@email.com" with the email address you wish to forward to. Be sure to leave the "!" alone.
+####################################################
+:0 B
+* ^BEGIN:VCALENDAR
+$DEFAULT
+#! example@email.com
+
+####################################################
+# FILTER 2
+# This filter catches anything from "do.not.reply@engr.orst.edu" with "Advising Signup" in the Subject line and runs it through the python script to parse the email and send the calendar invite.
+# No user customization for this filter.
+####################################################
+:0 fw:
+* ^From[: ].*do.not.reply@engr.orst.edu
+* ^Subject:.*Advising Signup
+| /usr/bin/python ~/advising_filter/email_parse.py
+
+####################################################
+# FILTER 3
+# This filter will catch every other type of email. By default it sends them to the email tied to where this filter is placed.
+# ATTENTION: To forward all other emails to an e-mail of your choosing other than the default tied where this filter was placed follow the next 2 steps. If you want to keep emails coming to the default email tied to where this filter is located then you don't have to change anything on this filter.
+# 1) Put a "#" before "$DEFAULT" on line 3 of this section. So line 3 would read "#$DEFAULT".
+# 2) Remove the "#" in the front of line 4 of this section. Then replace "example@email.com" with the email address you wish to forward to. Be sure to leave the "!" alone.
+####################################################
+:0
+* ^[a-zA-Z]+
+$DEFAULT
+#! example@email.com
